@@ -7,7 +7,7 @@ import {
 } from '../../utils/styles';
 import styles from './index.module.scss';
 
-export const RegisterForm = () => {
+export const LoginForm = () => {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
@@ -18,25 +18,15 @@ export const RegisterForm = () => {
         <InputLabel htmlFor='email'>Email</InputLabel>
         <InputField type='email' id='email'></InputField>
       </InputContainer>
-      <section className={styles.nameFieldRow}>
-        <InputContainer>
-          <InputLabel htmlFor='firstName'>First Name</InputLabel>
-          <InputField type='text' id='firstName'></InputField>
-        </InputContainer>
-        <InputContainer>
-          <InputLabel htmlFor='lastName'>Last Name</InputLabel>
-          <InputField type='text' id='lastName'></InputField>
-        </InputContainer>
-      </section>
-      <InputContainer>
+      <InputContainer className={styles.loginFormPassword}>
         <InputLabel htmlFor='password'>Password</InputLabel>
         <InputField type='password' id='password'></InputField>
       </InputContainer>
-      <Button className={styles.button}>Create new account</Button>
+      <Button className={styles.button}>Login</Button>
       <div className={styles.footerText}>
-        <span>Already have an account?</span>
-        <Link to={'/login'}>
-          <span>Login</span>
+        <span>Don't have an account?</span>
+        <Link to={'/register'}>
+          <span>Register</span>
         </Link>
       </div>
     </form>

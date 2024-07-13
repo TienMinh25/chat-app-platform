@@ -27,14 +27,29 @@ export const InputLabel = styled.label`
 
 export const Button = styled.button`
   width: 100%;
-  background-color: #2B09FF;
   outline: none;
-  font-size: 16px;
   border: none;
+  font-family: 'Inter';
+  font-size: 16px;
+  background-color: #6455c2;
   color: #fff;
   border-radius: 10px;
-  padding: 20px 0;
-`
+  padding: 25px 0;
+  font-weight: 500;
+  transition: 250ms background-color ease;
+  &:hover {
+    cursor: pointer;
+    background-color: #483c97;
+  }
+  &:active {
+    background-color: #4d409f;
+  }
+  &:disabled {
+    background-color: #4937bc7c;
+    color: #878787a2;
+    cursor: not-allowed;
+  }
+`;
 
 export const Page = styled.div`
   height: 100%;
@@ -42,4 +57,4 @@ export const Page = styled.div`
   justify-content: center;
   align-items: center;
   background-color: #1a1a1a;
-`
+`;
