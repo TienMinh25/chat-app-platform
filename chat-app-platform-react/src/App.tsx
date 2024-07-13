@@ -1,5 +1,6 @@
 import { Routes, Route, Outlet } from 'react-router-dom';
 import { AuthenticationPage } from './pages';
+import './index.css';
 
 function App() {
   return (

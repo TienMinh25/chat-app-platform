@@ -1,1 +1,1 @@
-export * from './AuthenticationPage';
+export * from './RegisterPage';
