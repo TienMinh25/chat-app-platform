@@ -1,24 +1,24 @@
 # Logs
-./chat-app-platform-react/logs
-./chat-app-platform-react/*.log
-./chat-app-platform-react/npm-debug.log*
-./chat-app-platform-react/yarn-debug.log*
-./chat-app-platform-react/yarn-error.log*
-./chat-app-platform-react/pnpm-debug.log*
-./chat-app-platform-react/lerna-debug.log*
+chat-app-platform-react/logs
+chat-app-platform-react/*.log
+chat-app-platform-react/npm-debug.log*
+chat-app-platform-react/yarn-debug.log*
+chat-app-platform-react/yarn-error.log*
+chat-app-platform-react/pnpm-debug.log*
+chat-app-platform-react/lerna-debug.log*
 
-./chat-app-platform-react/node_modules
-./chat-app-platform-react/dist
-./chat-app-platform-react/dist-ssr
-./chat-app-platform-react/*.local
+chat-app-platform-react/node_modules
+chat-app-platform-react/dist
+chat-app-platform-react/dist-ssr
+chat-app-platform-react/*.local
 
 # Editor directories and files
-./chat-app-platform-react/.vscode/*
-./chat-app-platform-react/!.vscode/extensions.json
-./chat-app-platform-react/.idea
-./chat-app-platform-react/.DS_Store
-./chat-app-platform-react/*.suo
-./chat-app-platform-react/*.ntvs*
-./chat-app-platform-react/*.njsproj
-./chat-app-platform-react/*.sln
-./chat-app-platform-react/*.sw?
+chat-app-platform-react/.vscode/*
+chat-app-platform-react/!.vscode/extensions.json
+chat-app-platform-react/.idea
+chat-app-platform-react/.DS_Store
+chat-app-platform-react/*.suo
+chat-app-platform-react/*.ntvs*
+chat-app-platform-react/*.njsproj
+chat-app-platform-react/*.sln
+chat-app-platform-react/*.sw?
