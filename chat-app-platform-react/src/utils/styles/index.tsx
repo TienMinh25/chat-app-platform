@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-import { PageProps } from './styleTypes';
+import { PageProps } from './style.type';
 
 export const SIDEBAR_WIDTH = '22%';
-
+export const SIDEBAR_HEIGHT = '80px';
 export const InputField = styled.input`
   font-family: 'Inter';
   outline: none;
@@ -70,20 +70,28 @@ export const ConversationSidebarStyle = styled.aside`
   left: 0;
   width: ${SIDEBAR_WIDTH};
   height: 100%;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
-  & header {
-    background-color: #151515;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 24px;
-    align-items: center;
-    border-bottom: 1px solid rgba(84, 84, 84, 28);
-    height: 80px;
+export const ConversationSidebarHeader = styled.header`
+  background-color: #151515;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+  align-items: center;
+  border-bottom: 1px solid rgba(84, 84, 84, 28);
+  height: ${SIDEBAR_HEIGHT};
+  position: sticky;
+  left: 0;
+  width: 100%;
+  top: 0;
 
-    & h1 {
-      font-weight: 500;
-      font-size: 20px;
-    }
+  & h1 {
+    font-weight: 500;
+    font-size: 20px;
   }
 `;
 
@@ -91,7 +99,20 @@ export const ConversationChannelPageStyle = styled.div`
   height: 100%;
   margin-left: ${SIDEBAR_WIDTH};
 `;
+
 export const ConversationPanelStyle = styled.div`
   height: 100%;
   margin-left: ${SIDEBAR_WIDTH};
+`;
+
+export const ConversationSidebarItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: #131313;
+`;
+
+export const ConversationSibbarContainer = styled.div`
 `;

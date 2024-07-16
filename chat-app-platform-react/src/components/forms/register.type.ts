@@ -1,4 +1,4 @@
-export interface RegisterProps { 
+export interface RegisterProps {
   email: string;
   password: string;
   firstName: string;

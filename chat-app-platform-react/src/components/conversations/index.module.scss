@@ -1,0 +1,29 @@
+.conversationName {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.conversationAvatar {
+  background-color: white;
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  min-width: 48px;
+}
+
+.conversationContainerMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.conversationLastMessage {
+  max-width: 242px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  color: rgb(163, 163, 163);
+}

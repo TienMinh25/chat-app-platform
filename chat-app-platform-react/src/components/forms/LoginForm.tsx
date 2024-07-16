@@ -1,3 +1,4 @@
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import {
   Button,
@@ -6,7 +7,6 @@ import {
   InputLabel,
 } from '../../utils/styles';
 import styles from './index.module.scss';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { LoginProps } from './login.type';
 
 export const LoginForm = () => {
