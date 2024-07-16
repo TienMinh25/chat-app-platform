@@ -22,3 +22,62 @@ chat-app-platform-react/*.ntvs*
 chat-app-platform-react/*.njsproj
 chat-app-platform-react/*.sln
 chat-app-platform-react/*.sw?
+
+# compiled output
+chat-app-platform-nestjs/dist
+chat-app-platform-nestjs/node_modules
+chat-app-platform-nestjs/build
+
+# Logs
+chat-app-platform-nestjs/logs
+chat-app-platform-nestjs/*.log
+chat-app-platform-nestjs/npm-debug.log*
+chat-app-platform-nestjs/pnpm-debug.log*
+chat-app-platform-nestjs/yarn-debug.log*
+chat-app-platform-nestjs/yarn-error.log*
+chat-app-platform-nestjs/lerna-debug.log*
+
+# OS
+chat-app-platform-nestjs/.DS_Store
+
+# Tests
+chat-app-platform-nestjs/coverage
+chat-app-platform-nestjs/.nyc_output
+
+# IDEs and editors
+chat-app-platform-nestjs/.idea
+chat-app-platform-nestjs/.project
+chat-app-platform-nestjs/.classpath
+chat-app-platform-nestjs/.c9/
+chat-app-platform-nestjs/*.launch
+chat-app-platform-nestjs/.settings/
+chat-app-platform-nestjs/*.sublime-workspace
+
+# IDE - VSCode
+chat-app-platform-nestjs/.vscode/*
+chat-app-platform-nestjs/!.vscode/settings.json
+chat-app-platform-nestjs/!.vscode/tasks.json
+chat-app-platform-nestjs/!.vscode/launch.json
+chat-app-platform-nestjs/!.vscode/extensions.json
+
+# dotenv environment variable files
+chat-app-platform-nestjs/.env
+chat-app-platform-nestjs/.env.development.local
+chat-app-platform-nestjs/.env.test.local
+chat-app-platform-nestjs/.env.production.local
+chat-app-platform-nestjs/.env.local
+
+# temp directory
+chat-app-platform-nestjs/.temp
+chat-app-platform-nestjs/.tmp
+
+# Runtime data
+chat-app-platform-nestjs/pids
+chat-app-platform-nestjs/*.pid
+chat-app-platform-nestjs/*.seed
+chat-app-platform-nestjs/*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+chat-app-platform-nestjs/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+

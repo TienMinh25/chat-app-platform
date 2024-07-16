@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./chat-app-platform-nestjs
+      dockerfile: backend.dockerfile
+    ports: 
+      - "3003:3003"
+    develop:
+      watch:
+        - path: ./chat-app-platform-nestjs/src
+          action: sync
+          target: /usr/src/src
+
+  frontend:
+    build:
+      context: ./chat-app-platform-react
+      dockerfile: frontend.dockerfile
+    ports:
+      - "5173:80"

@@ -8,12 +8,14 @@
     "allowJs": true,
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "rootDir": "src",
+    "rootDir": ".",
     "noImplicitReturns": true,
     "noImplicitThis": true,
+    "skipLibCheck": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,
+    "noEmit": true,
   },
   "exclude": [
     "node_modules",
@@ -23,6 +25,10 @@
     "webpack",
     "jest",
     "src/setupTests.ts"
+  ],
+  "include": [
+    "vite.config.ts",
+    "src/**/*"
   ],
   "types": [
     "typePatches"
