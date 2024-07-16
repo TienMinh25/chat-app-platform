@@ -70,23 +70,20 @@ export const ConversationSidebarStyle = styled.aside`
   left: 0;
   width: ${SIDEBAR_WIDTH};
   height: 100%;
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
 `;
 
 export const ConversationSidebarHeader = styled.header`
   background-color: #151515;
   display: flex;
   justify-content: space-between;
+  border-right: 1px solid rgba(84, 84, 84, 28);
   padding: 0 24px;
   align-items: center;
   border-bottom: 1px solid rgba(84, 84, 84, 28);
   height: ${SIDEBAR_HEIGHT};
-  position: sticky;
+  position: fixed;
   left: 0;
-  width: 100%;
+  width: ${SIDEBAR_WIDTH};
   top: 0;
 
   & h1 {
@@ -115,4 +112,20 @@ export const ConversationSidebarItem = styled.div`
 `;
 
 export const ConversationSibbarContainer = styled.div`
+  margin-top: ${SIDEBAR_HEIGHT};
+  overflow-y: scroll;
+  max-height: calc(100% - ${SIDEBAR_HEIGHT});
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #2d2d2d;
+    border-radius: 50px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 `;

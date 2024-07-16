@@ -7,8 +7,10 @@ import {
 } from '../../utils/styles';
 import { Props } from './conversation.type';
 import { ConversationItem } from './ConversationItem';
+import { useNavigate } from 'react-router-dom';
 
 export const ConversationSidebar: FC<Props> = ({ conversations }) => {
+  const navigate = useNavigate();
   return (
     <ConversationSidebarStyle>
       <ConversationSidebarHeader>
@@ -16,8 +18,12 @@ export const ConversationSidebar: FC<Props> = ({ conversations }) => {
         <MdOutlineAddToPhotos size={20} />
       </ConversationSidebarHeader>
       <ConversationSibbarContainer>
-        {conversations.map((conversation) => (
-          <ConversationItem conversation={conversation} />
+        {conversations.map((conversation, idx) => (
+          <ConversationItem
+            key={idx}
+            conversation={conversation}
+            onClick={() => navigate(`/conversations/${conversation.id}`)}
+          />
         ))}
       </ConversationSibbarContainer>
     </ConversationSidebarStyle>
