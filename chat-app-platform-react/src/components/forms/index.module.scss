@@ -18,11 +18,12 @@ form {
 }
 
 .footerText {
+  text-align: center;
+  margin: 10px 0;
+
   & :last-child {
     text-decoration: underline;
     color: #9a9a9a;
     margin-left: 2px;
   }
-  text-align: center;
-  margin: 10px 0;
 }
