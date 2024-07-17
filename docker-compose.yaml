@@ -16,6 +16,7 @@ services:
       - connect-between-backend-database
     depends_on:
       - database
+      - redis
 
   frontend:
     build:
@@ -28,6 +29,7 @@ services:
     depends_on:
       - backend
       - database
+      - redis
 
   database:
     image: mysql:8.0
@@ -45,8 +47,27 @@ services:
         target: /var/lib/mysql
     restart: unless-stopped
 
+  redis:
+    container_name: redis
+    image: redis:latest
+    expose:
+      - 6379
+    environment:
+      - REDIS_DISABLE_DEFAULT_USER=true
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+    volumes:
+      - redis_db:/var/lib/redis/data
+    networks:
+      - connect-between-backend-database
+    ports:
+      - 6000:6379
+    restart: unless-stopped
+    env_file:
+      - ./chat-app-platform-nestjs/.env
+
 volumes:
   db-database:
+  redis_db:
 
 networks:
   connect-between-backend-frontend:
