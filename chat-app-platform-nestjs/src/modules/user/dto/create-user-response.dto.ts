@@ -1,11 +1,20 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
-import { CreateUserRequest } from './create-user-request.dto';
+import { AutoMap } from '@automapper/classes';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserResponse extends PickType(CreateUserRequest, [
-  'email',
-  'firstName',
-  'lastName',
-]) {
+export class CreateUserResponse {
+  @AutoMap()
   @ApiProperty()
   id: number;
+
+  @AutoMap()
+  @ApiProperty()
+  email: string;
+
+  @AutoMap()
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  @AutoMap()
+  lastName: string;
 }

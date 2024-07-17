@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { hashRawText } from '../../utils';
 import { CreateUserRequest } from './dto';
 import { User } from './user.entity';
-import { IUserService } from './user.type';
+import { IUserService } from './type';
 
 @Injectable()
 export class UserService implements IUserService {

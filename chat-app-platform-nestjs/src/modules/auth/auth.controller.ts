@@ -10,7 +10,9 @@ export class AuthController {
 
   @ApiOkResponse({ type: CreateUserResponse })
   @Post('register')
-  registerUser(@Body() createUser: CreateUserRequest) {
+  registerUser(
+    @Body() createUser: CreateUserRequest,
+  ): Promise<CreateUserResponse> {
     return this.authService.createUser(createUser);
   }
 

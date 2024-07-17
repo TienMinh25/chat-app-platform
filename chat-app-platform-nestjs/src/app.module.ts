@@ -5,6 +5,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './common/typeorm';
+import { AutomapperModule } from '@automapper/nestjs';
+import { classes } from '@automapper/classes';
 
 @Module({
   imports: [
@@ -24,6 +26,12 @@ import { entities } from './common/typeorm';
     UserModule,
     AuthModule,
     CustomI18nModule,
+    AutomapperModule.forRoot([
+      {
+        name: 'classes',
+        strategyInitializer: classes(),
+      },
+    ]),
   ],
   controllers: [],
   providers: [],
