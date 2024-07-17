@@ -1,6 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import 'reflect-metadata';
+import { AppModule } from './app.module';
+import { configSwagger } from './api-docs.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +13,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  configSwagger(app);
+  app.enableCors();
   const { PORT } = process.env;
 
   await app.listen(PORT, () => {

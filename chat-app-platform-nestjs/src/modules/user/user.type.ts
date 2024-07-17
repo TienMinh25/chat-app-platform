@@ -1,4 +1,4 @@
-import { ICreateUser } from './type/create-user.type';
+import { ICreateUser } from './type';
 
 export interface IUserService {
   createUser(createUser: ICreateUser);

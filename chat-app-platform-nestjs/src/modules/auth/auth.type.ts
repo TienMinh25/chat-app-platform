@@ -1,4 +1,4 @@
-import { ICreateUser } from '../user/type/create-user.type';
+import { ICreateUser } from '../user/type';
 
 export interface IAuthSerivce {
   validateUser();

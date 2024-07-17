@@ -1,3 +1,4 @@
+import { User } from '@common/typeorm';
 import { Injectable } from '@nestjs/common';
 import { CreateUserRequest } from '../user/dto';
 import { UserService } from '../user/user.service';
@@ -9,7 +10,7 @@ export class AuthService implements IAuthSerivce {
 
   validateUser() {}
 
-  createUser(createUser: CreateUserRequest) {
-    this.userService.createUser(createUser);
+  createUser(createUser: CreateUserRequest): Promise<User> {
+    return this.userService.createUser(createUser);
   }
 }

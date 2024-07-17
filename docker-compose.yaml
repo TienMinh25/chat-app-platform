@@ -11,6 +11,11 @@ services:
     volumes:
       - ./chat-app-platform-nestjs/src:/usr/src/src
     restart: unless-stopped
+    networks:
+      - connect-between-backend-frontend
+      - connect-between-backend-database
+    depends_on:
+      - database
 
   frontend:
     build:
@@ -18,3 +23,31 @@ services:
       dockerfile: frontend.dockerfile
     ports:
       - '5173:80'
+    networks:
+      - connect-between-backend-frontend
+    depends_on:
+      - backend
+      - database
+
+  database:
+    image: mysql:8.0
+    ports:
+      - '3307:3306'
+    expose:
+      - 3306
+    networks:
+      - connect-between-backend-database
+    env_file:
+      - ./chat-app-platform-nestjs/.env
+    volumes:
+      - type: volume
+        source: db-database
+        target: /var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  db-database:
+
+networks:
+  connect-between-backend-frontend:
+  connect-between-backend-database:
