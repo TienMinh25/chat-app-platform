@@ -4,11 +4,15 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateUserResponse {
   @AutoMap()
   @ApiProperty()
-  id: number;
+  id: string;
 
   @AutoMap()
   @ApiProperty()
   email: string;
+
+  @ApiProperty()
+  @AutoMap()
+  username: string;
 
   @AutoMap()
   @ApiProperty()
@@ -17,4 +21,8 @@ export class CreateUserResponse {
   @ApiProperty()
   @AutoMap()
   lastName: string;
+
+  @ApiProperty()
+  @AutoMap()
+  isEmailVerified: boolean;
 }

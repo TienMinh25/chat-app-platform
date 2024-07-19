@@ -1,11 +1,12 @@
 import { AutoMap } from '@automapper/classes';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { RefreshToken } from '@common/typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
   @AutoMap()
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @AutoMap()
   @Column()
@@ -17,8 +18,31 @@ export class User {
 
   @AutoMap()
   @Column({ unique: true })
+  username: string;
+
+  @AutoMap()
+  @Column({ type: 'boolean', default: false })
+  isEmailVerified: boolean;
+
+  @Column({ unique: true, nullable: true })
+  emailVerfiedToken: string;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  emailVerfiedExpired: Date;
+
+  @Column({ unique: true, nullable: true })
+  forgotPasswordToken: string;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  forgotPasswordExpired: Date;
+
+  @AutoMap()
+  @Column()
   email: string;
 
   @Column()
   password: string;
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshTokens: RefreshToken[];
 }

@@ -16,6 +16,11 @@ export class CreateUserRequest {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
+  username: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   @MaxLength(32)
   firstName: string;
 

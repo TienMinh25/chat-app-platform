@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Xác minh email của bạn</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 84px 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        background-color: #477c76;
+        color: #ffffff;
+        border-radius: 5px 5px 0 0;
+      }
+      .content {
+        padding: 20px;
+      }
+      .button {
+        display: block;
+        width: fit-content;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #477c76;
+        color: #ffffff;
+        text-align: center;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+      .button:hover {
+        background-color: #325c57;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Xác minh email của bạn</h1>
+      </div>
+      <div class="content">
+        <p style="font-weight: 700;">Xin chào {{fullName}},</p>
+        <p>Cảm ơn bạn đã đăng ký. Vui lòng nhấn vào nút dưới đây để xác minh email của bạn:</p>
+        <a href="{{url}}" class="button">Xác minh email</a>
+        <p><span style="font-weight: 700;">Lưu ý</span>: Email này chỉ có hiệu lực trong vòng <span style="font-weight: 700;">24 giờ</span>. Vui lòng xác minh trong thời gian này để hoàn tất đăng ký.</p>
+        <p>Nếu bạn không tạo tài khoản này, vui lòng bỏ qua email này.</p>
+        <p style="font-weight: 700;">Trân trọng,</p>
+        <p style="font-weight: 700;">Đội ngũ phát triển Chat Application Platform</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -32,19 +32,19 @@ services:
       - redis
 
   database:
-    image: mysql:8.0
+    image: postgres
     ports:
-      - '3307:3306'
+      - '5432:5432'
     expose:
-      - 3306
+      - 5432
     networks:
       - connect-between-backend-database
     env_file:
       - ./chat-app-platform-nestjs/.env
     volumes:
       - type: volume
-        source: db-database
-        target: /var/lib/mysql
+        source: postgres_data
+        target: /var/lib/postgresql/data
     restart: unless-stopped
 
   redis:
@@ -60,13 +60,13 @@ services:
     networks:
       - connect-between-backend-database
     ports:
-      - 6000:6379
+      - 6001:6379
     restart: unless-stopped
     env_file:
       - ./chat-app-platform-nestjs/.env
 
 volumes:
-  db-database:
+  postgres_data:
   redis_db:
 
 networks:
