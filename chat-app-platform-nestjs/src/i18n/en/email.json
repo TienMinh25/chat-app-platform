@@ -1,6 +1,12 @@
 {
   "password": {
-    "reset": "Reset your password"
+    "subject": {
+      "reset": "Reset your password"
+    }
   },
-  "register_verify": "Verify your email"
+  "register": {
+    "subject": {
+      "verify": "Verify your email"
+    }
+  }
 }

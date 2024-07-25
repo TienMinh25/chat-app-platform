@@ -1,3 +1,4 @@
+import { BlacklistExceptionFactory } from '@common/factories/exception-factory/black-list.exception.factory';
 import {
   CanActivate,
   ExecutionContext,
@@ -5,13 +6,15 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { Observable } from 'rxjs';
 import { RedisPrefix } from 'src/infrastructure/redis/redis-prefix-enum';
 import { RedisRepository } from 'src/infrastructure/redis/redis.repository';
 
 @Injectable()
 export class BlacklistGuard implements CanActivate {
-  constructor(private readonly redisService: RedisRepository) {}
+  constructor(
+    private readonly redisService: RedisRepository,
+    private readonly blacklistExceptionFactory: BlacklistExceptionFactory,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
@@ -23,7 +26,7 @@ export class BlacklistGuard implements CanActivate {
     );
 
     if (!blackAccessToken) {
-      throw new UnauthorizedException();
+      throw this.blacklistExceptionFactory.createAccessTokenInvalidException();
     }
 
     return true;

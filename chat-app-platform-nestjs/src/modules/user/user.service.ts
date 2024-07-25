@@ -16,18 +16,17 @@ export class UserService implements IUserService {
     private readonly i18n: CustomI18nService,
   ) {}
 
-  async create(createUser: CreateUserRequest): Promise<User> {
-    const hashedPassword = await hashPassword(createUser.password);
-    const user = this.userRepository.create({
-      email: createUser.email,
-      username: createUser.username,
-      firstName: createUser.firstName,
-      lastName: createUser.lastName,
+  async create(payload: CreateUserRequest): Promise<User> {
+    const hashedPassword = await hashPassword(payload.password);
+    const newUser = await this.userRepository.save({
+      email: payload.email,
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
       emailVerfiedExpired: new Date(Date.now() + VERIFY_REGISTER_TIME),
       emailVerfiedToken: crypto.randomBytes(64).toString('hex'),
       password: hashedPassword,
     });
-    const newUser = await this.userRepository.save(user);
 
     return newUser;
   }
@@ -36,7 +35,7 @@ export class UserService implements IUserService {
     return this.userRepository.findOne({ where: params });
   }
 
-  update(user: User): Promise<User> {
-    return this.userRepository.save(user);
+  update(payload: Partial<User>): Promise<User> {
+    return this.userRepository.save(payload);
   }
 }

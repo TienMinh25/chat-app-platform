@@ -2,11 +2,12 @@ import {
   ACCESS_TOKEN_EXPIRED_TIME,
   REFRESH_TOKEN_EXPIRED_TIME,
 } from '@common/const';
+import { AuthExceptionFactory } from '@common/factories/exception-factory/auth.exception.factory';
 import { UserExceptionFactory } from '@common/factories/exception-factory/user.exception.factory';
 import { RefreshToken, User } from '@common/typeorm';
 import { IUserContext } from '@common/types';
 import { CustomI18nService } from '@modules/custom-i18n/custom-i18n.service';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,13 +29,14 @@ import {
   ResendEmailRequest,
   ResetPasswordRequest,
 } from './dto';
-import { DataToken, IAuthSerivce, Tokens } from './type';
+import { DataToken, IAuthSerivce, PayloadToken, Tokens } from './type';
 
 @Injectable()
 export class AuthService implements IAuthSerivce {
   constructor(
     private readonly userService: UserService,
     private readonly userExceptionFactory: UserExceptionFactory,
+    private readonly authExceptionFactory: AuthExceptionFactory,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepostiory: Repository<RefreshToken>,
     private readonly i18n: CustomI18nService,
@@ -54,7 +56,7 @@ export class AuthService implements IAuthSerivce {
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      throw new UnauthorizedException(this.i18n.t('auth.errors.login_failure'));
+      throw this.authExceptionFactory.createLoginFailedException();
     }
 
     if (!user.isEmailVerified) {
@@ -108,9 +110,7 @@ export class AuthService implements IAuthSerivce {
     });
 
     if (!refreshTokenExist) {
-      throw new UnauthorizedException(
-        this.i18n.t('auth.errors.invalid_refresh_token'),
-      );
+      throw this.authExceptionFactory.createInvalidRefreshTokenException();
     }
 
     const { accessToken, refreshToken } = await this.createTokens({
@@ -118,8 +118,6 @@ export class AuthService implements IAuthSerivce {
       sessionId: userCtx.sessionId,
       username: userCtx.username,
       email: userCtx.email,
-      firstName: userCtx.firstName,
-      lastName: userCtx.lastName,
     });
 
     await this.refreshTokenRepostiory.save({
@@ -183,7 +181,7 @@ export class AuthService implements IAuthSerivce {
     this.queueService.addJobToResetPassword({
       token: user.forgotPasswordToken,
       email: user.email,
-      subject: `${this.i18n.t('email.password.reset')}`,
+      subject: `${this.i18n.t('email.password.subject.reset')}`,
       fullName: `${user.firstName} ${user.lastName}`,
     });
   }
@@ -195,7 +193,7 @@ export class AuthService implements IAuthSerivce {
     });
 
     if (!deletedRefreshToken) {
-      throw new UnauthorizedException();
+      throw this.authExceptionFactory.createRefreshTokenNotFoundException();
     }
 
     const timeRemainAccessToken =
@@ -229,7 +227,7 @@ export class AuthService implements IAuthSerivce {
       token: newUser.emailVerfiedToken,
       email: newUser.email,
       fullName: `${newUser.firstName} ${newUser.lastName}`,
-      subject: `${this.i18n.t('email.register_verify')}`,
+      subject: `${this.i18n.t('email.register.subject.verify')}`,
     });
 
     return newUser;
@@ -249,10 +247,6 @@ export class AuthService implements IAuthSerivce {
       throw this.userExceptionFactory.createEmailWasVerifiedException();
     }
 
-    if (user.emailVerfiedExpired < new Date()) {
-      throw new UnauthorizedException(this.i18n.t('auth.errors.expired_token'));
-    }
-
     user.emailVerfiedToken = crypto.randomBytes(64).toString('hex');
     user.emailVerfiedExpired = new Date(Date.now() + VERIFY_REGISTER_TIME);
 
@@ -262,7 +256,7 @@ export class AuthService implements IAuthSerivce {
       token: updatedUser.emailVerfiedToken,
       email: updatedUser.email,
       fullName: `${updatedUser.firstName} ${updatedUser.lastName}`,
-      subject: `${this.i18n.t('email.register_verify')}`,
+      subject: `${this.i18n.t('email.register.subject.verify')}`,
     });
   }
 
@@ -270,7 +264,7 @@ export class AuthService implements IAuthSerivce {
     const user = await this.userService.findOne({ emailVerfiedToken: token });
 
     if (!user) {
-      throw new UnauthorizedException(this.i18n.t('auth.errors.invalid_token'));
+      throw this.authExceptionFactory.createVerifiedEmailTokenInvalid();
     }
 
     if (user.isEmailVerified) {
@@ -278,7 +272,7 @@ export class AuthService implements IAuthSerivce {
     }
 
     if (user.emailVerfiedExpired < new Date()) {
-      throw new UnauthorizedException(this.i18n.t('auth.errors.expired_token'));
+      throw this.authExceptionFactory.createExpiredVerifiedEmailToken();
     }
 
     await this.userService.update({
@@ -307,7 +301,7 @@ export class AuthService implements IAuthSerivce {
           username: data.username,
           email: data.email,
           sessionId: data.sessionId,
-        },
+        } as PayloadToken,
         {
           secret: this.configService.get<string>('SECRET_KEY_ACCESS_JWT'),
           expiresIn: ACCESS_TOKEN_EXPIRED_TIME,
@@ -319,7 +313,7 @@ export class AuthService implements IAuthSerivce {
           username: data.username,
           email: data.email,
           sessionId: data.sessionId,
-        },
+        } as PayloadToken,
         {
           secret: this.configService.get<string>('SECRET_KEY_REFRESH_JWT'),
           expiresIn: REFRESH_TOKEN_EXPIRED_TIME,

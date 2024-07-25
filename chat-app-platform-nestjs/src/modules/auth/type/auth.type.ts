@@ -37,7 +37,7 @@ export interface PayloadToken {
   sub: string;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
   sessionId: string;
 }

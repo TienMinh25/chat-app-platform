@@ -7,6 +7,6 @@ export class CustomI18nService {
 
   public t(key: string, options?: Record<string, any>) {
     const lang = I18nContext.current()?.lang || 'en';
-    return this.i18n.translate(key, { lang, ...options });
+    return this.i18n.translate(key, { lang, ...options }) as string;
   }
 }

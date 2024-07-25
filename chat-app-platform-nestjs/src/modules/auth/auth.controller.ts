@@ -1,5 +1,4 @@
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
+import { MapInterceptor } from '@automapper/nestjs';
 import { Auth } from '@common/decorators';
 import { UserContext } from '@common/decorators/user-context.decorator';
 import { User } from '@common/typeorm';
@@ -11,6 +10,7 @@ import {
   HttpStatus,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserRequest, CreateUserResponse } from '../user/dto';
@@ -32,19 +32,17 @@ import {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    @InjectMapper('classes') private readonly classMapper: Mapper,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiOkResponse({ type: CreateUserResponse })
+  @UseInterceptors(MapInterceptor(User, CreateUserResponse))
   @Post('register')
   async register(
     @Body() createUser: CreateUserRequest,
   ): Promise<CreateUserResponse> {
     const user = await this.authService.register(createUser);
 
-    return this.classMapper.map(user, User, CreateUserResponse);
+    return user;
   }
 
   @ApiOkResponse({ type: LoginResponse })
