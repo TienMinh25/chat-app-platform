@@ -1,0 +1,12 @@
+{
+  "password": {
+    "subject": {
+      "reset": "Reset your password"
+    }
+  },
+  "register": {
+    "subject": {
+      "verify": "Verify your email"
+    }
+  }
+}

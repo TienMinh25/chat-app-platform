@@ -1,5 +1,6 @@
+import { RefreshToken } from '@modules/auth/refresh-token.entity';
 import { User } from '../../modules/user/user.entity';
 
-const entities = [User];
+const entities = [User, RefreshToken];
 
-export { entities, User };
+export { entities, User, RefreshToken };

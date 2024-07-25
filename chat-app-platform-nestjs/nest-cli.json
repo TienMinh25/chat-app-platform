@@ -7,6 +7,9 @@
     "assets": [
       {
         "include": "i18n/**/*", "watchAssets": true
+      },
+      {
+        "include": "infrastructure/mail/templates/**/*", "watchAssets": true
       }
     ]
   }

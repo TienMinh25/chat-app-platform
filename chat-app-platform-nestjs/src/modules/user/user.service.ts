@@ -1,11 +1,13 @@
+import { VERIFY_REGISTER_TIME } from '@modules/auth/auth.const';
 import { CustomI18nService } from '@modules/custom-i18n/custom-i18n.service';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as crypto from 'crypto';
 import { Repository } from 'typeorm';
-import { hashRawText } from '../../utils';
+import { hashPassword } from '../../utils';
 import { CreateUserRequest } from './dto';
+import { FindUserParams, IUserService } from './type';
 import { User } from './user.entity';
-import { IUserService } from './type';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -14,25 +16,26 @@ export class UserService implements IUserService {
     private readonly i18n: CustomI18nService,
   ) {}
 
-  async createUser(createUser: CreateUserRequest): Promise<User> {
-    const existsUser = await this.userRepository.findOneBy({
-      email: createUser.email,
-    });
-
-    if (existsUser) {
-      throw new ConflictException(this.i18n.t('user.already_exists'));
-    }
-
-    const hashedPassword = await hashRawText(createUser.password);
-
-    const user = this.userRepository.create({
-      email: createUser.email,
-      firstName: createUser.firstName,
-      lastName: createUser.lastName,
+  async create(payload: CreateUserRequest): Promise<User> {
+    const hashedPassword = await hashPassword(payload.password);
+    const newUser = await this.userRepository.save({
+      email: payload.email,
+      username: payload.username,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      emailVerfiedExpired: new Date(Date.now() + VERIFY_REGISTER_TIME),
+      emailVerfiedToken: crypto.randomBytes(64).toString('hex'),
       password: hashedPassword,
     });
 
-    const newUser = await this.userRepository.save(user);
     return newUser;
+  }
+
+  findOne(params: FindUserParams): Promise<User> {
+    return this.userRepository.findOne({ where: params });
+  }
+
+  update(payload: Partial<User>): Promise<User> {
+    return this.userRepository.save(payload);
   }
 }

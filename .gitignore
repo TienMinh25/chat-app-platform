@@ -80,4 +80,6 @@ chat-app-platform-nestjs/*.pid.lock
 # Diagnostic reports (https://nodejs.org/api/report.html)
 chat-app-platform-nestjs/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
+.DS_Store
 
+.idea
