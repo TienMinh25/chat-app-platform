@@ -1,9 +1,9 @@
 import { Global, Module } from '@nestjs/common';
-import { ExceptionFactory } from './exception.factory';
+import { UserExceptionFactory } from './user.exception.factory';
 
 @Global()
 @Module({
-  providers: [ExceptionFactory],
-  exports: [ExceptionFactory],
+  providers: [UserExceptionFactory],
+  exports: [UserExceptionFactory],
 })
 export class ExceptionFactoryModule {}

@@ -1,5 +1,8 @@
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
 import { Auth } from '@common/decorators';
 import { UserContext } from '@common/decorators/user-context.decorator';
+import { User } from '@common/typeorm';
 import { IUserContext } from '@common/types';
 import {
   Body,
@@ -17,9 +20,7 @@ import {
   RequestResetPasswordRequest,
   ResendEmailRequest,
   ResetPasswordRequest,
-  ResetPasswordResponse,
   VerifyEmailRequest,
-  VerifyEmailResponse,
 } from './dto';
 import {
   AccessTokenGuard,
@@ -31,13 +32,19 @@ import {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @InjectMapper('classes') private readonly classMapper: Mapper,
+  ) {}
 
   @ApiOkResponse({ type: CreateUserResponse })
-  @HttpCode(HttpStatus.OK)
   @Post('register')
-  register(@Body() createUser: CreateUserRequest): Promise<CreateUserResponse> {
-    return this.authService.register(createUser);
+  async register(
+    @Body() createUser: CreateUserRequest,
+  ): Promise<CreateUserResponse> {
+    const user = await this.authService.register(createUser);
+
+    return this.classMapper.map(user, User, CreateUserResponse);
   }
 
   @ApiOkResponse({ type: LoginResponse })
@@ -50,9 +57,9 @@ export class AuthController {
 
   @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
-  @Post('resend-email')
-  async resendEmail(@Body() data: ResendEmailRequest) {
-    await this.authService.resendEmail(data);
+  @Post('resend-verify-email')
+  async resendEmailVerify(@Body() data: ResendEmailRequest) {
+    await this.authService.resendEmailVerify(data);
   }
 
   @Auth()
@@ -63,20 +70,20 @@ export class AuthController {
     this.authService.logout(userCtx);
   }
 
-  @ApiOkResponse({ type: ResetPasswordResponse })
+  @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  resetPassword(
-    @Body() data: ResetPasswordRequest,
-  ): Promise<ResetPasswordResponse> {
+  resetPassword(@Body() data: ResetPasswordRequest): Promise<void> {
     return this.authService.resetPassword(data);
   }
 
   @ApiOkResponse()
   @Post('request-reset-password')
   @HttpCode(HttpStatus.OK)
-  async requestResetPassword(@Body() data: RequestResetPasswordRequest) {
-    await this.authService.requestResetPassword(data);
+  requestResetPassword(
+    @Body() data: RequestResetPasswordRequest,
+  ): Promise<void> {
+    return this.authService.requestResetPassword(data);
   }
 
   @Post('refresh')
@@ -86,10 +93,10 @@ export class AuthController {
     return this.authService.refreshToken(userCtx);
   }
 
-  @ApiOkResponse({ type: VerifyEmailResponse })
+  @ApiOkResponse()
   @HttpCode(HttpStatus.OK)
   @Post('verify-email')
-  verifyEmail(@Body() data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
+  verifyEmail(@Body() data: VerifyEmailRequest): Promise<void> {
     return this.authService.verifyEmail(data.emailToken);
   }
 }

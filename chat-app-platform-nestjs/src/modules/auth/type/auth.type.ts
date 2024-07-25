@@ -6,19 +6,17 @@ import {
   RefreshTokenResponse,
   RequestResetPasswordRequest,
   ResetPasswordRequest,
-  ResetPasswordResponse,
-  VerifyEmailResponse,
 } from '../dto';
 
 export interface IAuthSerivce {
   validateUser(email: string, password: string): Promise<DataToken>;
   register(createUser: ICreateUser): Promise<CreateUserResponse>;
-  verifyEmail(token: string): Promise<VerifyEmailResponse>;
+  verifyEmail(token: string): Promise<void>;
   login(userCtx: IUserContext): Promise<LoginResponse>;
   refreshToken(userCtx: IUserContext): Promise<RefreshTokenResponse>;
   logout(userCtx: IUserContext): Promise<void>;
   requestResetPassword(data: RequestResetPasswordRequest);
-  resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse>;
+  resetPassword(data: ResetPasswordRequest): Promise<void>;
 }
 
 export interface DataToken {
@@ -26,11 +24,20 @@ export interface DataToken {
   sessionId: string;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface Tokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface PayloadToken {
+  sub: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  sessionId: string;
 }

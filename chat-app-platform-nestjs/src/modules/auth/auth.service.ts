@@ -1,10 +1,8 @@
-import { Mapper } from '@automapper/core';
-import { InjectMapper } from '@automapper/nestjs';
 import {
   ACCESS_TOKEN_EXPIRED_TIME,
   REFRESH_TOKEN_EXPIRED_TIME,
 } from '@common/const';
-import { ExceptionFactory } from '@common/factories/exception-factory/exception.factory';
+import { UserExceptionFactory } from '@common/factories/exception-factory/user.exception.factory';
 import { RefreshToken, User } from '@common/typeorm';
 import { IUserContext } from '@common/types';
 import { CustomI18nService } from '@modules/custom-i18n/custom-i18n.service';
@@ -12,20 +10,15 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hashRawText, parseExpirationTime } from '@utils/helper-functions';
+import { hashPassword, parseExpirationTime } from '@utils/helper-functions';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { EmailType } from 'src/infrastructure/mail/type';
 import { QueueService } from 'src/infrastructure/queue/queue.service';
 import { RedisPrefix } from 'src/infrastructure/redis/redis-prefix-enum';
 import { RedisRepository } from 'src/infrastructure/redis/redis.repository';
 import { Repository } from 'typeorm';
 import { v1 as uuidv1 } from 'uuid';
-import {
-  CreateUserRequest,
-  CreateUserResponse,
-  UserResponse,
-} from '../user/dto';
+import { CreateUserRequest } from '../user/dto';
 import { UserService } from '../user/user.service';
 import { RESET_PASSWORD_TIME, VERIFY_REGISTER_TIME } from './auth.const';
 import {
@@ -34,8 +27,6 @@ import {
   RequestResetPasswordRequest,
   ResendEmailRequest,
   ResetPasswordRequest,
-  ResetPasswordResponse,
-  VerifyEmailResponse,
 } from './dto';
 import { DataToken, IAuthSerivce, Tokens } from './type';
 
@@ -43,8 +34,7 @@ import { DataToken, IAuthSerivce, Tokens } from './type';
 export class AuthService implements IAuthSerivce {
   constructor(
     private readonly userService: UserService,
-    private readonly exceptionFactory: ExceptionFactory,
-    @InjectMapper('classes') private readonly classMapper: Mapper,
+    private readonly userExceptionFactory: UserExceptionFactory,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepostiory: Repository<RefreshToken>,
     private readonly i18n: CustomI18nService,
@@ -55,20 +45,20 @@ export class AuthService implements IAuthSerivce {
   ) {}
 
   async validateUser(username: string, password: string): Promise<DataToken> {
-    const user = await this.userService.findUser({ username: username });
+    const user = await this.userService.findOne({ username: username });
 
     if (!user) {
-      throw this.exceptionFactory.createUserNotFoundException();
+      throw this.userExceptionFactory.createUserNotFoundException();
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      throw new UnauthorizedException(this.i18n.t('auth.login_failure'));
+      throw new UnauthorizedException(this.i18n.t('auth.errors.login_failure'));
     }
 
     if (!user.isEmailVerified) {
-      throw this.exceptionFactory.createEmailNotVerfiedException();
+      throw this.userExceptionFactory.createEmailNotVerfiedException();
     }
 
     const sessionId: string = uuidv1();
@@ -88,8 +78,6 @@ export class AuthService implements IAuthSerivce {
       id: userCtx.id,
       email: userCtx.email,
       username: userCtx.username,
-      lastName: userCtx.lastName,
-      firstName: userCtx.firstName,
       sessionId: userCtx.sessionId,
     });
 
@@ -121,7 +109,7 @@ export class AuthService implements IAuthSerivce {
 
     if (!refreshTokenExist) {
       throw new UnauthorizedException(
-        this.i18n.t('auth.invalid_refresh_token'),
+        this.i18n.t('auth.errors.invalid_refresh_token'),
       );
     }
 
@@ -146,77 +134,56 @@ export class AuthService implements IAuthSerivce {
     };
   }
 
-  async resetPassword(
-    data: ResetPasswordRequest,
-  ): Promise<ResetPasswordResponse> {
+  async resetPassword(data: ResetPasswordRequest): Promise<void> {
     const { forgotPasswordToken, password } = data;
 
-    const user = await this.userService.findUser({
+    const user = await this.userService.findOne({
       forgotPasswordToken,
     });
 
     if (!user) {
-      throw this.exceptionFactory.createUserNotFoundException();
+      throw this.userExceptionFactory.createUserNotFoundException();
     }
 
     if (user.forgotPasswordExpired < new Date()) {
-      throw this.exceptionFactory.createForgotPasswordTokenExpiredException();
+      throw this.userExceptionFactory.createForgotPasswordTokenExpiredException();
     }
 
-    user.password = await hashRawText(password);
+    user.password = await hashPassword(password);
     user.forgotPasswordToken = null;
     user.forgotPasswordExpired = null;
 
-    const sessionId: string = uuidv1();
-    const [{ accessToken, refreshToken }, userUpdated] = await Promise.all([
-      this.createTokens({
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        sessionId,
-      }),
-      this.userService.updateUser(user),
-    ]);
-
-    await this.refreshTokenRepostiory.save({
-      refreshToken,
-      sessionId,
-      user: userUpdated,
-      expired: this.getRefreshTokenExpiredDate(),
-    });
-
-    const userReturn = this.classMapper.map(userUpdated, User, UserResponse);
+    const userUpdated = await this.userService.update(user);
 
     this.queueService.addJobNotificationChangePasswordSuccess({
       email: userUpdated.email,
       fullName: `${userUpdated.firstName} ${userUpdated.lastName}`,
     });
-
-    return {
-      ...userReturn,
-      accessToken,
-      refreshToken,
-    };
   }
 
   async requestResetPassword(data: RequestResetPasswordRequest) {
-    const user = await this.userService.findUser(data);
+    const user = await this.userService.findOne({
+      username: data.username,
+      email: data.email,
+    });
 
     if (!user) {
-      throw this.exceptionFactory.createUserNotFoundException();
+      throw this.userExceptionFactory.createUserNotFoundException();
+    }
+
+    if (!user.isEmailVerified) {
+      throw this.userExceptionFactory.createEmailNotVerfiedException();
     }
 
     user.forgotPasswordToken = crypto.randomBytes(64).toString('hex');
     user.forgotPasswordExpired = new Date(Date.now() + RESET_PASSWORD_TIME);
 
-    await this.userService.updateUser(user);
+    await this.userService.update(user);
 
     this.queueService.addJobToResetPassword({
       token: user.forgotPasswordToken,
       email: user.email,
-      subject: 'Reset your password',
+      subject: `${this.i18n.t('email.password.reset')}`,
       fullName: `${user.firstName} ${user.lastName}`,
     });
   }
@@ -243,147 +210,83 @@ export class AuthService implements IAuthSerivce {
     );
   }
 
-  async register(createUser: CreateUserRequest): Promise<CreateUserResponse> {
-    const user = await this.userService.findUser({
+  async register(createUser: CreateUserRequest): Promise<User> {
+    const user = await this.userService.findOne({
       username: createUser.username,
     });
 
     if (user && !user.isEmailVerified) {
-      throw this.exceptionFactory.createEmailNotVerfiedException();
+      throw this.userExceptionFactory.createEmailNotVerfiedException();
     }
 
     if (user) {
-      throw this.exceptionFactory.createUserAlreadyExistException();
+      throw this.userExceptionFactory.createUserAlreadyExistException();
     }
 
-    const newUser = await this.userService.createUser(createUser);
+    const newUser = await this.userService.create(createUser);
 
     this.queueService.addJobToVerifyEmailQueue({
       token: newUser.emailVerfiedToken,
       email: newUser.email,
       fullName: `${newUser.firstName} ${newUser.lastName}`,
-      subject: 'Verify your email',
+      subject: `${this.i18n.t('email.register_verify')}`,
     });
 
-    return this.classMapper.map(newUser, User, CreateUserResponse);
+    return newUser;
   }
 
-  async resendEmail(data: ResendEmailRequest): Promise<void> {
-    const user = await this.userService.findUser({
+  async resendEmailVerify(data: ResendEmailRequest): Promise<void> {
+    const user = await this.userService.findOne({
       username: data.username,
       email: data.email,
     });
 
     if (!user) {
-      throw this.exceptionFactory.createUserNotFoundException();
-    }
-
-    switch (data.type) {
-      case EmailType.RESET_PASSWORD: {
-        if (!user.isEmailVerified) {
-          throw this.exceptionFactory.createEmailNotVerfiedException();
-        }
-
-        user.forgotPasswordToken = crypto.randomBytes(64).toString('hex');
-        user.forgotPasswordExpired = new Date(Date.now() + RESET_PASSWORD_TIME);
-
-        break;
-      }
-      case EmailType.VERIFY_REGISTER: {
-        if (user.isEmailVerified) {
-          throw this.exceptionFactory.createEmailWasVerifiedException();
-        }
-
-        if (user.emailVerfiedExpired < new Date()) {
-          throw new UnauthorizedException(this.i18n.t('auth.expired_token'));
-        }
-
-        user.emailVerfiedToken = crypto.randomBytes(64).toString('hex');
-        user.emailVerfiedExpired = new Date(Date.now() + VERIFY_REGISTER_TIME);
-
-        break;
-      }
-      default:
-        break;
-    }
-
-    const updatedUser = await this.userService.updateUser(user);
-
-    switch (data.type) {
-      case EmailType.RESET_PASSWORD: {
-        this.queueService.addJobToResetPassword({
-          token: updatedUser.forgotPasswordToken,
-          email: updatedUser.email,
-          fullName: `${updatedUser.firstName} ${updatedUser.lastName}`,
-          subject: 'Reset your password',
-        });
-        break;
-      }
-      case EmailType.VERIFY_REGISTER: {
-        this.queueService.addJobToVerifyEmailQueue({
-          token: updatedUser.emailVerfiedToken,
-          email: updatedUser.email,
-          fullName: `${updatedUser.firstName} ${updatedUser.lastName}`,
-          subject: 'Verify your email',
-        });
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  async verifyEmail(token: string): Promise<VerifyEmailResponse> {
-    const user = await this.userService.findUser({ emailVerfiedToken: token });
-
-    if (!user) {
-      throw new UnauthorizedException(this.i18n.t('auth.invalid_token'));
+      throw this.userExceptionFactory.createUserNotFoundException();
     }
 
     if (user.isEmailVerified) {
-      throw this.exceptionFactory.createEmailWasVerifiedException();
+      throw this.userExceptionFactory.createEmailWasVerifiedException();
     }
 
     if (user.emailVerfiedExpired < new Date()) {
-      throw new UnauthorizedException(this.i18n.t('auth.expired_token'));
+      throw new UnauthorizedException(this.i18n.t('auth.errors.expired_token'));
     }
 
-    const sessionId: string = uuidv1();
-    const [{ accessToken, refreshToken }, userUpdated] = await Promise.all([
-      this.createTokens({
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        sessionId,
-      }),
-      this.userService.updateUser({
-        ...user,
-        emailVerfiedExpired: null,
-        emailVerfiedToken: null,
-        isEmailVerified: true,
-      }),
-    ]);
+    user.emailVerfiedToken = crypto.randomBytes(64).toString('hex');
+    user.emailVerfiedExpired = new Date(Date.now() + VERIFY_REGISTER_TIME);
 
-    await this.refreshTokenRepostiory.save({
-      user: userUpdated,
-      sessionId,
-      refreshToken,
-      expired: this.getRefreshTokenExpiredDate(),
+    const updatedUser = await this.userService.update(user);
+
+    this.queueService.addJobToVerifyEmailQueue({
+      token: updatedUser.emailVerfiedToken,
+      email: updatedUser.email,
+      fullName: `${updatedUser.firstName} ${updatedUser.lastName}`,
+      subject: `${this.i18n.t('email.register_verify')}`,
     });
+  }
 
-    const userReturn = this.classMapper.map(
-      userUpdated,
-      User,
-      CreateUserResponse,
-    );
+  async verifyEmail(token: string): Promise<void> {
+    const user = await this.userService.findOne({ emailVerfiedToken: token });
 
-    return {
-      ...userReturn,
-      accessToken,
-      refreshToken,
-    };
+    if (!user) {
+      throw new UnauthorizedException(this.i18n.t('auth.errors.invalid_token'));
+    }
+
+    if (user.isEmailVerified) {
+      throw this.userExceptionFactory.createEmailWasVerifiedException();
+    }
+
+    if (user.emailVerfiedExpired < new Date()) {
+      throw new UnauthorizedException(this.i18n.t('auth.errors.expired_token'));
+    }
+
+    await this.userService.update({
+      ...user,
+      emailVerfiedExpired: null,
+      emailVerfiedToken: null,
+      isEmailVerified: true,
+    });
   }
 
   private getRefreshTokenExpiredDate(): Date {
@@ -400,11 +303,9 @@ export class AuthService implements IAuthSerivce {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
-          id: data.id,
+          sub: data.id,
           username: data.username,
           email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
           sessionId: data.sessionId,
         },
         {
@@ -414,11 +315,9 @@ export class AuthService implements IAuthSerivce {
       ),
       this.jwtService.signAsync(
         {
-          id: data.id,
+          sub: data.id,
           username: data.username,
           email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
           sessionId: data.sessionId,
         },
         {

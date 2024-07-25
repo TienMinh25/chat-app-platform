@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto';
 import { Repository } from 'typeorm';
-import { hashRawText } from '../../utils';
+import { hashPassword } from '../../utils';
 import { CreateUserRequest } from './dto';
 import { FindUserParams, IUserService } from './type';
 import { User } from './user.entity';
@@ -16,8 +16,8 @@ export class UserService implements IUserService {
     private readonly i18n: CustomI18nService,
   ) {}
 
-  async createUser(createUser: CreateUserRequest): Promise<User> {
-    const hashedPassword = await hashRawText(createUser.password);
+  async create(createUser: CreateUserRequest): Promise<User> {
+    const hashedPassword = await hashPassword(createUser.password);
     const user = this.userRepository.create({
       email: createUser.email,
       username: createUser.username,
@@ -32,11 +32,11 @@ export class UserService implements IUserService {
     return newUser;
   }
 
-  findUser(params: FindUserParams): Promise<User> {
+  findOne(params: FindUserParams): Promise<User> {
     return this.userRepository.findOne({ where: params });
   }
 
-  updateUser(user: User): Promise<User> {
+  update(user: User): Promise<User> {
     return this.userRepository.save(user);
   }
 }

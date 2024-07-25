@@ -37,7 +37,7 @@ export class User {
   forgotPasswordExpired: Date;
 
   @AutoMap()
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()

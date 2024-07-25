@@ -1,6 +1,6 @@
-import { NotAcceptableException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 
-export class ForgotPasswordTokenExpired extends NotAcceptableException {
+export class ForgotPasswordTokenExpired extends ConflictException {
   constructor(message: string, error?: string) {
     super(message, error);
   }

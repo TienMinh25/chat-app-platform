@@ -3,8 +3,8 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
+  IsStrongPassword,
   MaxLength,
-  MinLength,
 } from 'class-validator';
 
 export class CreateUserRequest {
@@ -31,8 +31,7 @@ export class CreateUserRequest {
   lastName: string;
 
   @ApiProperty()
-  @IsString()
+  @IsStrongPassword()
   @IsNotEmpty()
-  @MinLength(6)
   password: string;
 }

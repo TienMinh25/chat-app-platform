@@ -1,12 +1,24 @@
-import { PickType } from '@nestjs/swagger';
-import { VerifyEmailResponse } from './verify-email-response.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class LoginResponse extends PickType(VerifyEmailResponse, [
-  'accessToken',
-  'email',
-  'firstName',
-  'id',
-  'lastName',
-  'refreshToken',
-  'username',
-]) {}
+export class LoginResponse {
+  @ApiProperty()
+  accessToken: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  firstName: string;
+
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  lastName: string;
+
+  @ApiProperty()
+  refreshToken: string;
+
+  @ApiProperty()
+  username: string;
+}

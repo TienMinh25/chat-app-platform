@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { EmailType } from 'src/infrastructure/mail/type';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class ResendEmailRequest {
   @ApiProperty()
@@ -12,11 +11,4 @@ export class ResendEmailRequest {
   @IsString()
   @IsNotEmpty()
   username: string;
-
-  @ApiProperty({
-    enum: EmailType,
-  })
-  @IsEnum(EmailType)
-  @IsNotEmpty()
-  type: EmailType;
 }
