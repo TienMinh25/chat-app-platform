@@ -1,5 +1,5 @@
 import { AutoMap } from '@automapper/classes';
-import { RefreshToken } from '@common/typeorm';
+import { ConversationMembers, RefreshToken } from '@common/typeorm';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -45,4 +45,10 @@ export class User {
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
+
+  @OneToMany(
+    () => ConversationMembers,
+    (conversationMembers) => conversationMembers.users,
+  )
+  conversations: ConversationMembers[];
 }
