@@ -35,14 +35,14 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOkResponse({ type: CreateUserResponse })
-  @UseInterceptors(MapInterceptor(User, CreateUserResponse))
+  @UseInterceptors(
+    MapInterceptor(User, CreateUserResponse, {
+      mapperName: 'classes',
+    }),
+  )
   @Post('register')
-  async register(
-    @Body() createUser: CreateUserRequest,
-  ): Promise<CreateUserResponse> {
-    const user = await this.authService.register(createUser);
-
-    return user;
+  register(@Body() createUser: CreateUserRequest): Promise<CreateUserResponse> {
+    return this.authService.register(createUser);
   }
 
   @ApiOkResponse({ type: LoginResponse })

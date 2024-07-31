@@ -10,7 +10,10 @@ function App() {
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='conversations' element={<ConversationPage />}>
-          <Route path=':conversationId' element={<ConversationChannelPage />}></Route>
+          <Route
+            path=':conversationId'
+            element={<ConversationChannelPage />}
+          ></Route>
         </Route>
       </Routes>
     </>

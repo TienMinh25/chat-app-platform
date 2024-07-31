@@ -1,21 +1,27 @@
 {
   "compilerOptions": {
-    "outDir": "build/dist",
-    "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "dom"],
-    "sourceMap": true,
-    "allowJs": true,
-    "jsx": "react-jsx",
-    "moduleResolution": "node",
-    "rootDir": ".",
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "skipLibCheck": true,
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "strictNullChecks": true,
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
   },
   "exclude": [
     "node_modules",

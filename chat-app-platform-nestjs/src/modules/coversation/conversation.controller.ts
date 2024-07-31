@@ -1,4 +1,6 @@
 import { Auth } from '@common/decorators';
+import { UserContext } from '@common/decorators/user-context.decorator';
+import { IUserContext } from '@common/types';
 import {
   Body,
   Controller,
@@ -10,8 +12,6 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { ConversationService } from './conversation.service';
 import { CreateConversationRequest } from './dto';
-import { UserContext } from '@common/decorators/user-context.decorator';
-import { IUserContext } from '@common/types';
 
 @ApiTags('conversations')
 @Auth()
@@ -22,13 +22,18 @@ export class ConversationController {
   // payload gui len thi cai phan payload o nhung nguoi nhan thi se la array
   // ngoai ra nen co them type
   @Post()
-  createConversation(@Body() payload: CreateConversationRequest) {
-    this.conversationService.createConversation(payload);
+  createConversation(
+    @UserContext() userCtx: IUserContext,
+    @Body() payload: CreateConversationRequest,
+  ) {
+    return this.conversationService.createConversation(userCtx, payload);
   }
 
   // pagination
   @Get()
-  getConversations(@UserContext() userCtx: IUserContext) {}
+  getConversations(@UserContext() { id }: IUserContext) {
+    return this.conversationService.getConversations(id);
+  }
 
   // pagination
   @Get(':conversationId')

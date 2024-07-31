@@ -36,7 +36,6 @@ import { QueueModule } from './infrastructure/queue/queue.module';
     ConversationModule,
     CustomI18nModule,
     ExceptionFactoryModule,
-
     AutomapperModule.forRoot([
       {
         name: 'classes',

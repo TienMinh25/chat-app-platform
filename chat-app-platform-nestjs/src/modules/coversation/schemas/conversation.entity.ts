@@ -1,7 +1,10 @@
+import { User } from '@common/typeorm';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -14,8 +17,9 @@ export class Conversation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
-  createdById: string;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'createdById', referencedColumnName: 'id' })
+  creator: User;
 
   @Column()
   title: string;
@@ -29,7 +33,7 @@ export class Conversation {
   @Column({ nullable: true })
   subType: string;
 
-  @Column({ type: 'timestamptz', nullable: true })
+  @UpdateDateColumn({ name: 'last_message_at' })
   lastMessageAt: Date;
 
   @Column({ type: 'json', nullable: true })
@@ -37,9 +41,6 @@ export class Conversation {
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
 
   @OneToMany(
     () => ConversationMembers,

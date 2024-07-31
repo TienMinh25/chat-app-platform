@@ -8,6 +8,7 @@ import {
 } from '../../utils/styles';
 import styles from './index.module.scss';
 import { LoginProps } from './login.type';
+import callApi from '../../utils/api';
 
 export const LoginForm = () => {
   const {
@@ -16,7 +17,7 @@ export const LoginForm = () => {
     formState: { errors },
   } = useForm<LoginProps>();
 
-  const onSubmit: SubmitHandler<LoginProps> = (data: LoginProps) => {
+  const onSubmit: SubmitHandler<LoginProps> = async (data: LoginProps) => {
     console.log(data);
   };
 

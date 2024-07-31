@@ -6,7 +6,7 @@ import { Page } from '../utils/styles';
 
 export const ConversationPage = () => {
   const { conversationId } = useParams();
-
+  console.log(conversationId);
   return (
     <Page>
       <ConversationSidebar conversations={mockConversations} />

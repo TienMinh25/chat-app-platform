@@ -1,22 +1,24 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { ConversationType } from '../conversation.enum';
 
 export class CreateConversationRequest {
-  @ApiProperty()
-  @IsUUID()
-  @IsNotEmpty()
-  createdById: string;
-
   @ApiProperty({ isArray: true })
   @IsUUID(4, { each: true })
   @IsArray()
-  recipient: string[];
+  recipients: string[];
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  title: string;
+  title?: string;
 
   @ApiProperty({ enum: ConversationType })
   @IsEnum(ConversationType)
