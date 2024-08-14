@@ -47,8 +47,8 @@ export class AuthService implements IAuthSerivce {
     private readonly redisClient: RedisRepository,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<DataToken> {
-    const user = await this.userService.findOne({ username: username });
+  async validateUser(email: string, password: string): Promise<DataToken> {
+    const user = await this.userService.findOne({ email: email });
 
     if (!user) {
       throw this.userExceptionFactory.createUserNotFoundException();

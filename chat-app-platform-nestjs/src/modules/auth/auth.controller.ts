@@ -12,10 +12,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserRequest, CreateUserResponse } from '../user/dto';
 import { AuthService } from './auth.service';
 import {
+  LoginRequest,
   LoginResponse,
   RequestResetPasswordRequest,
   ResendEmailRequest,
@@ -47,6 +48,9 @@ export class AuthController {
   }
 
   @ApiOkResponse({ type: LoginResponse })
+  @ApiBody({
+    type: LoginRequest,
+  })
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalGuard)
   @Post('login')

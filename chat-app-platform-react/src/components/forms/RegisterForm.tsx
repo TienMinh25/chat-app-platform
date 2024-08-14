@@ -18,7 +18,8 @@ export const RegisterForm: React.FC = () => {
     formState: { errors },
   } = useForm<RegisterProps>();
   const navigate = useNavigate();
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [isRegistered, setIsRegistered] = useState<boolean>(false);
+  const [registerError, setRegisterError] = useState<string>('');
 
   const onSubmit: SubmitHandler<RegisterProps> = async (
     data: RegisterProps,
@@ -29,8 +30,8 @@ export const RegisterForm: React.FC = () => {
       if (response) {
         setIsRegistered(true);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error: any) {
+      setRegisterError(error.response.data.message ?? 'Something went wrong');
     }
   };
 
@@ -150,6 +151,9 @@ export const RegisterForm: React.FC = () => {
       </div>
 
       <Button className={styles.button}>Create new account</Button>
+      {registerError && (
+        <div className={styles.errorMessage}>{registerError}</div>
+      )}
       <div className={styles.footerText}>
         <span>Already have an account?</span>
         <Link to={'/login'}>
