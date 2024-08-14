@@ -34,7 +34,7 @@ export const authService = {
 
     return false;
   },
-  async checkAuthUser() {
+  async checkAuthUser(): Promise<User | undefined> {
     try {
       const data: User = await callApi('auth/status', 'GET');
       localStorage.setItem('email', data.email);
@@ -44,9 +44,9 @@ export const authService = {
 
       return data;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
-    return null;
+    return;
   },
 };
