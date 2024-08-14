@@ -6,6 +6,8 @@ import axios, {
 } from 'axios';
 
 let axiosInstance: AxiosInstance;
+let isRefreshing = false;
+let failedRequests: Array<any> = [];
 
 const createAxiosInstance = () => {
   axiosInstance = axios.create({
@@ -28,13 +30,10 @@ const createAxiosInstance = () => {
     },
   );
 
-  let isRefreshing = false;
-  let failedRequests: Array<any> = [];
-
   // Add interceptor when need to refresh token (access token expired)
   axiosInstance.interceptors.response.use(
     (response: AxiosResponse) => response,
-    async (error) => {
+    async (error: AxiosError) => {
       const status = error.response?.status;
       const originalRequestConfig = error.config!;
       const _refreshToken = localStorage.getItem('refreshToken');
@@ -43,15 +42,29 @@ const createAxiosInstance = () => {
         return Promise.reject(error);
       }
 
+      if (status === 401 && error.config!.url === 'auth/refresh') {
+        originalRequestConfig.headers.Authorization = null;
+        localStorage.setItem('accessToken', '');
+        localStorage.setItem('refreshToken', '');
+
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
-          failedRequests.push({ resolve, reject });
+          failedRequests.push({
+            resolve,
+            reject,
+          });
         })
           .then((token: any) => {
             originalRequestConfig.headers.Authorization = `Bearer ${token}`;
             return axiosInstance(originalRequestConfig);
           })
-          .catch((err: any) => Promise.reject(err));
+          .catch((err: any) => {
+            window.location.href = '/login';
+            Promise.reject(err);
+          });
       }
 
       isRefreshing = true;
@@ -72,7 +85,6 @@ const createAxiosInstance = () => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
-        isRefreshing = false;
         failedRequests.forEach(({ resolve }: any) => resolve(accessToken));
         failedRequests = [];
 
@@ -80,16 +92,15 @@ const createAxiosInstance = () => {
 
         return axiosInstance(originalRequestConfig);
       } catch (_error) {
-        console.error(_error);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        isRefreshing = false;
+        localStorage.setItem('accessToken', '');
+        localStorage.setItem('refreshToken', '');
 
         failedRequests = [];
-
         window.location.href = '/login';
 
         return Promise.reject(_error);
+      } finally {
+        isRefreshing = false;
       }
     },
   );

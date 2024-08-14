@@ -6,6 +6,7 @@ import { IUserContext } from '@common/types';
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -13,7 +14,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserRequest, CreateUserResponse } from '../user/dto';
+import {
+  CreateUserRequest,
+  CreateUserResponse,
+  UserResponse,
+} from '../user/dto';
 import { AuthService } from './auth.service';
 import {
   LoginRequest,
@@ -30,11 +35,15 @@ import {
   LocalGuard,
   RefreshTokenGuard,
 } from './guards';
+import { UserService } from '@modules/user/user.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @ApiOkResponse({ type: CreateUserResponse })
   @UseInterceptors(
@@ -101,5 +110,17 @@ export class AuthController {
   @Post('verify-email')
   verifyEmail(@Body() data: VerifyEmailRequest) {
     return this.authService.verifyEmail(data.emailToken);
+  }
+
+  @ApiOkResponse({ type: UserResponse })
+  @UseInterceptors(
+    MapInterceptor(User, UserResponse, {
+      mapperName: 'classes',
+    }),
+  )
+  @Get('status')
+  @UseGuards(AccessTokenGuard)
+  status(@UserContext() userCtx: IUserContext) {
+    return this.userService.findOne({ id: userCtx.id });
   }
 }

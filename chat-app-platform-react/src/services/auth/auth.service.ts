@@ -1,4 +1,5 @@
 import { LoginProps } from '../../components/forms/login.type';
+import { User } from '../../types/User';
 import callApi from '../../utils/api';
 import { LoginResponse } from './auth.type';
 
@@ -32,5 +33,20 @@ export const authService = {
     }
 
     return false;
+  },
+  async checkAuthUser() {
+    try {
+      const data: User = await callApi('auth/status', 'GET');
+      localStorage.setItem('email', data.email);
+      localStorage.setItem('username', data.username);
+      localStorage.setItem('firstName', data.firstName);
+      localStorage.setItem('lastName', data.lastName);
+
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+
+    return null;
   },
 };

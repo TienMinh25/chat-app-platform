@@ -6,6 +6,14 @@ export function configSwagger(app: INestApplication) {
     .setTitle('Chat app platform API')
     .setDescription('Information about api provided for FE')
     .setVersion('1.0')
+    .addSecurity('accessToken', {
+      type: 'http',
+      scheme: 'bearer',
+    })
+    .addSecurity('refreshToken', {
+      type: 'http',
+      scheme: 'bearer',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
