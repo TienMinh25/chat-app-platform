@@ -11,7 +11,7 @@ import { RegisterProps } from './register.type';
 import callApi from '../../utils/api';
 import { useState } from 'react';
 
-export const RegisterForm = () => {
+export const RegisterForm: React.FC = () => {
   const {
     register,
     handleSubmit,

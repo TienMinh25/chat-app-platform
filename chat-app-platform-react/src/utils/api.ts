@@ -28,12 +28,14 @@ const createAxiosInstance = () => {
     },
   );
 
+  let isRefreshing = false;
+  let failedRequests: Array<any> = [];
+
   // Add interceptor when need to refresh token (access token expired)
   axiosInstance.interceptors.response.use(
     (response: AxiosResponse) => response,
-    async (error: AxiosError) => {
+    async (error) => {
       const status = error.response?.status;
-      // syntax to assertion attribute in object is non null or non undefined
       const originalRequestConfig = error.config!;
       const _refreshToken = localStorage.getItem('refreshToken');
 
@@ -41,8 +43,21 @@ const createAxiosInstance = () => {
         return Promise.reject(error);
       }
 
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedRequests.push({ resolve, reject });
+        })
+          .then((token: any) => {
+            originalRequestConfig.headers.Authorization = `Bearer ${token}`;
+            return axiosInstance(originalRequestConfig);
+          })
+          .catch((err: any) => Promise.reject(err));
+      }
+
+      isRefreshing = true;
+
       try {
-        const response = await axiosInstance.post('/api/v1/refresh', null, {
+        const response = await axiosInstance.post('auth/refresh', null, {
           headers: {
             Authorization: `Bearer ${_refreshToken}`,
           },
@@ -54,16 +69,28 @@ const createAxiosInstance = () => {
           throw new Error('Something went wrong while refreshing your token');
         }
 
-        localStorage.setItem('accessToken', JSON.stringify(accessToken));
-        localStorage.setItem('refreshToken', JSON.stringify(refreshToken));
-      } catch (_error: unknown) {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        isRefreshing = false;
+        failedRequests.forEach(({ resolve }: any) => resolve(accessToken));
+        failedRequests = [];
+
+        originalRequestConfig.headers.Authorization = `Bearer ${accessToken}`;
+
+        return axiosInstance(originalRequestConfig);
+      } catch (_error) {
         console.error(_error);
-        localStorage.setItem('accessToken', '');
-        localStorage.setItem('refreshToken', '');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        isRefreshing = false;
+
+        failedRequests = [];
+
+        window.location.href = '/login';
+
         return Promise.reject(_error);
       }
-
-      return axiosInstance(originalRequestConfig);
     },
   );
 };

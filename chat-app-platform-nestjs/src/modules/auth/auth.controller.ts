@@ -21,6 +21,7 @@ import {
   ResendEmailRequest,
   ResetPasswordRequest,
   VerifyEmailRequest,
+  VerifyEmailResponse,
 } from './dto';
 import {
   AccessTokenGuard,
@@ -91,10 +92,10 @@ export class AuthController {
     return this.authService.refreshToken(userCtx);
   }
 
-  @ApiOkResponse()
+  @ApiOkResponse({ type: VerifyEmailResponse })
   @HttpCode(HttpStatus.OK)
   @Post('verify-email')
-  verifyEmail(@Body() data: VerifyEmailRequest): Promise<void> {
+  verifyEmail(@Body() data: VerifyEmailRequest) {
     return this.authService.verifyEmail(data.emailToken);
   }
 }

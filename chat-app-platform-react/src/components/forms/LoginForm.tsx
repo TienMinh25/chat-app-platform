@@ -8,13 +8,13 @@ import {
 } from '../../utils/styles';
 import styles from './index.module.scss';
 import { LoginProps } from './login.type';
-import callApi from '../../utils/api';
+import React from 'react';
 
-export const LoginForm = () => {
+export const LoginForm: React.FC = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {  },
   } = useForm<LoginProps>();
 
   const onSubmit: SubmitHandler<LoginProps> = async (data: LoginProps) => {

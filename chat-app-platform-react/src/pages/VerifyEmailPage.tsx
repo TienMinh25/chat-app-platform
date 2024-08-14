@@ -1,10 +1,10 @@
-import { RegisterForm } from '../components/forms';
+import { VerifyEmail } from '../components/verifies';
 import { Page } from '../utils/styles';
 
-export const RegisterPage: React.FC = () => {
+export const VerifyEmailPage: React.FC = () => {
   return (
     <Page display='flex' justifyContent='center' alignItems='center'>
-      <RegisterForm />
+      <VerifyEmail />
     </Page>
   );
 };

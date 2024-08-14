@@ -1,8 +1,8 @@
 import { CustomI18nService } from '@modules/custom-i18n/custom-i18n.service';
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -12,13 +12,13 @@ export class AuthExceptionFactory {
   createLoginFailedException(error?: string) {
     const message = this.i18n.t('auth.errors.login_failure');
 
-    return new UnauthorizedException(message, error);
+    return new ConflictException(message, error);
   }
 
   createInvalidRefreshTokenException(error?: string) {
     const message = this.i18n.t('auth.errors.invalid_refresh_token');
 
-    return new UnauthorizedException(message, error);
+    return new ConflictException(message, error);
   }
 
   createRefreshTokenNotFoundException(error?: string) {
@@ -30,12 +30,12 @@ export class AuthExceptionFactory {
   createExpiredVerifiedEmailToken(error?: string) {
     const message = this.i18n.t('auth.errors.expired_token');
 
-    return new UnauthorizedException(message, error);
+    return new ConflictException(message, error);
   }
 
   createVerifiedEmailTokenInvalid(error?: string) {
     const message = this.i18n.t('auth.errors.invalid_token');
 
-    return new UnauthorizedException(message, error);
+    return new ConflictException(message, error);
   }
 }

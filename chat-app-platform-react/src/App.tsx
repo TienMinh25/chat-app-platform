@@ -1,7 +1,12 @@
 import { Route, Routes } from 'react-router-dom';
 import './index.css';
-import { ConversationPage, LoginPage, RegisterPage } from './pages';
-import { ConversationChannelPage } from './pages/ConversationChannelPage';
+import {
+  ConversationPage,
+  LoginPage,
+  RegisterPage,
+  VerifyEmailPage,
+} from './pages';
+import { ConversationChannelPage } from './pages';
 
 function App() {
   return (
@@ -15,6 +20,7 @@ function App() {
             element={<ConversationChannelPage />}
           ></Route>
         </Route>
+        <Route path='/verify-email' element={<VerifyEmailPage />}></Route>
       </Routes>
     </>
   );
