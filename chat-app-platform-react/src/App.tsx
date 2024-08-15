@@ -8,10 +8,14 @@ import {
   RegisterPage,
   VerifyEmailPage,
 } from './pages';
+import { AuthContext } from './utils/context';
+import { useState } from 'react';
+import { User } from './types/User';
 
 function App() {
+  const [user, setUser] = useState<User>();
   return (
-    <>
+    <AuthContext.Provider value={{ user, updateAuthUser: setUser }}>
       <Routes>
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
@@ -27,7 +31,7 @@ function App() {
         <Route path='/verify-email' element={<VerifyEmailPage />}></Route>
         <Route path='*' element={<p>There's nothing here: 404!</p>} />
       </Routes>
-    </>
+    </AuthContext.Provider>
   );
 }
 
