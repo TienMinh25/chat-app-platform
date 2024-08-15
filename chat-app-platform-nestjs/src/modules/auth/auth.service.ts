@@ -28,6 +28,7 @@ import {
   RequestResetPasswordRequest,
   ResendEmailRequest,
   ResetPasswordRequest,
+  VerifyEmailResponse,
 } from './dto';
 import { DataToken, IAuthSerivce, PayloadToken, Tokens } from './type';
 
@@ -46,8 +47,8 @@ export class AuthService implements IAuthSerivce {
     private readonly redisClient: RedisRepository,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<DataToken> {
-    const user = await this.userService.findOne({ username: username });
+  async validateUser(email: string, password: string): Promise<DataToken> {
+    const user = await this.userService.findOne({ email: email });
 
     if (!user) {
       throw this.userExceptionFactory.createUserNotFoundException();
@@ -260,7 +261,7 @@ export class AuthService implements IAuthSerivce {
     });
   }
 
-  async verifyEmail(token: string): Promise<void> {
+  async verifyEmail(token: string): Promise<VerifyEmailResponse> {
     const user = await this.userService.findOne({ emailVerfiedToken: token });
 
     if (!user) {
@@ -275,12 +276,39 @@ export class AuthService implements IAuthSerivce {
       throw this.authExceptionFactory.createExpiredVerifiedEmailToken();
     }
 
-    await this.userService.update({
-      ...user,
-      emailVerfiedExpired: null,
-      emailVerfiedToken: null,
-      isEmailVerified: true,
+    const sessionId: string = uuidv1();
+
+    const [updatedUser, { accessToken, refreshToken }] = await Promise.all([
+      this.userService.update({
+        ...user,
+        emailVerfiedExpired: null,
+        emailVerfiedToken: null,
+        isEmailVerified: true,
+      }),
+      this.createTokens({
+        id: user.id,
+        sessionId: sessionId,
+        username: user.username,
+        email: user.email,
+      }),
+    ]);
+
+    await this.refreshTokenRepostiory.save({
+      user: updatedUser,
+      sessionId: sessionId,
+      refreshToken,
+      expired: this.getRefreshTokenExpiredDate(),
     });
+
+    return {
+      accessToken,
+      refreshToken,
+      id: updatedUser.id,
+      email: updatedUser.email,
+      username: updatedUser.username,
+      lastName: updatedUser.lastName,
+      firstName: updatedUser.firstName,
+    };
   }
 
   private getRefreshTokenExpiredDate(): Date {

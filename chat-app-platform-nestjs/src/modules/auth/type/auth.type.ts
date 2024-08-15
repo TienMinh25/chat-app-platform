@@ -6,12 +6,13 @@ import {
   RefreshTokenResponse,
   RequestResetPasswordRequest,
   ResetPasswordRequest,
+  VerifyEmailResponse,
 } from '../dto';
 
 export interface IAuthSerivce {
   validateUser(email: string, password: string): Promise<DataToken>;
   register(createUser: ICreateUser): Promise<CreateUserResponse>;
-  verifyEmail(token: string): Promise<void>;
+  verifyEmail(token: string): Promise<VerifyEmailResponse>;
   login(userCtx: IUserContext): Promise<LoginResponse>;
   refreshToken(userCtx: IUserContext): Promise<RefreshTokenResponse>;
   logout(userCtx: IUserContext): Promise<void>;

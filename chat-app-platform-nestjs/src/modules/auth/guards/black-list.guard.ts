@@ -1,10 +1,5 @@
 import { BlacklistExceptionFactory } from '@common/factories/exception-factory/black-list.exception.factory';
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { RedisPrefix } from 'src/infrastructure/redis/redis-prefix-enum';
 import { RedisRepository } from 'src/infrastructure/redis/redis.repository';

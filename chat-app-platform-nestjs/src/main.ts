@@ -6,8 +6,8 @@ import { configSwagger } from './api-docs.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const { PORT } = process.env;
-  app.enableCors();
+  const { PORT, CLIENT_BASE_URL } = process.env;
+  app.enableCors({ origin: [CLIENT_BASE_URL] });
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(
     new ValidationPipe({

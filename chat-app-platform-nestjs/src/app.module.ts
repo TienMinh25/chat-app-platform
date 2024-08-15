@@ -3,6 +3,7 @@ import { AutomapperModule } from '@automapper/nestjs';
 import { ExceptionFactoryModule } from '@common/factories/exception-factory/exception.factory.module';
 import { AllExceptionsFilter } from '@common/filters';
 import { AuthModule } from '@modules/auth/auth.module';
+import { ConversationModule } from '@modules/coversation/conversation.module';
 import { CustomI18nModule } from '@modules/custom-i18n/custom-i18n.module';
 import { UserModule } from '@modules/user/user.module';
 import { BullModule } from '@nestjs/bull';
@@ -32,6 +33,7 @@ import { QueueModule } from './infrastructure/queue/queue.module';
     }),
     UserModule,
     AuthModule,
+    ConversationModule,
     CustomI18nModule,
     ExceptionFactoryModule,
     AutomapperModule.forRoot([

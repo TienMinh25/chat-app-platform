@@ -6,21 +6,28 @@ import { IUserContext } from '@common/types';
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserRequest, CreateUserResponse } from '../user/dto';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  CreateUserRequest,
+  CreateUserResponse,
+  UserResponse,
+} from '../user/dto';
 import { AuthService } from './auth.service';
 import {
+  LoginRequest,
   LoginResponse,
   RequestResetPasswordRequest,
   ResendEmailRequest,
   ResetPasswordRequest,
   VerifyEmailRequest,
+  VerifyEmailResponse,
 } from './dto';
 import {
   AccessTokenGuard,
@@ -28,24 +35,31 @@ import {
   LocalGuard,
   RefreshTokenGuard,
 } from './guards';
+import { UserService } from '@modules/user/user.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   @ApiOkResponse({ type: CreateUserResponse })
-  @UseInterceptors(MapInterceptor(User, CreateUserResponse))
+  @UseInterceptors(
+    MapInterceptor(User, CreateUserResponse, {
+      mapperName: 'classes',
+    }),
+  )
   @Post('register')
-  async register(
-    @Body() createUser: CreateUserRequest,
-  ): Promise<CreateUserResponse> {
-    const user = await this.authService.register(createUser);
-
-    return user;
+  register(@Body() createUser: CreateUserRequest): Promise<CreateUserResponse> {
+    return this.authService.register(createUser);
   }
 
   @ApiOkResponse({ type: LoginResponse })
+  @ApiBody({
+    type: LoginRequest,
+  })
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalGuard)
   @Post('login')
@@ -91,10 +105,22 @@ export class AuthController {
     return this.authService.refreshToken(userCtx);
   }
 
-  @ApiOkResponse()
+  @ApiOkResponse({ type: VerifyEmailResponse })
   @HttpCode(HttpStatus.OK)
   @Post('verify-email')
-  verifyEmail(@Body() data: VerifyEmailRequest): Promise<void> {
+  verifyEmail(@Body() data: VerifyEmailRequest) {
     return this.authService.verifyEmail(data.emailToken);
+  }
+
+  @ApiOkResponse({ type: UserResponse })
+  @UseInterceptors(
+    MapInterceptor(User, UserResponse, {
+      mapperName: 'classes',
+    }),
+  )
+  @Get('status')
+  @UseGuards(AccessTokenGuard)
+  status(@UserContext() userCtx: IUserContext) {
+    return this.userService.findOne({ id: userCtx.id });
   }
 }

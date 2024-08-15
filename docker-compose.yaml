@@ -18,18 +18,18 @@ services:
       - database
       - redis
 
-  frontend:
-    build:
-      context: ./chat-app-platform-react
-      dockerfile: frontend.dockerfile
-    ports:
-      - '5173:80'
-    networks:
-      - connect-between-backend-frontend
-    depends_on:
-      - backend
-      - database
-      - redis
+  # frontend:
+  #   build:
+  #     context: ./chat-app-platform-react
+  #     dockerfile: frontend.dockerfile
+  #   ports:
+  #     - '5173:80'
+  #   networks:
+  #     - connect-between-backend-frontend
+  #   depends_on:
+  #     - backend
+  #     - database
+  #     - redis
 
   database:
     image: postgres

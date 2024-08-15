@@ -1,5 +1,4 @@
 import { VERIFY_REGISTER_TIME } from '@modules/auth/auth.const';
-import { CustomI18nService } from '@modules/custom-i18n/custom-i18n.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as crypto from 'crypto';
@@ -13,7 +12,6 @@ import { User } from './user.entity';
 export class UserService implements IUserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    private readonly i18n: CustomI18nService,
   ) {}
 
   async create(payload: CreateUserRequest): Promise<User> {
@@ -31,7 +29,7 @@ export class UserService implements IUserService {
     return newUser;
   }
 
-  findOne(params: FindUserParams): Promise<User> {
+  findOne(params: FindUserParams): Promise<User | null> {
     return this.userRepository.findOne({ where: params });
   }
 
