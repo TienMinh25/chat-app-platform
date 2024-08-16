@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { PageProps } from './style.type';
+import { InputContainerProps, PageProps } from './style.type';
 
 export const SIDEBAR_WIDTH = '22%';
 export const SIDEBAR_HEIGHT = '80px';
@@ -14,8 +14,8 @@ export const InputField = styled.input`
   margin: 4px 0;
 `;
 
-export const InputContainer = styled.div`
-  background-color: #131313;
+export const InputContainer = styled.div<InputContainerProps>`
+  background-color: ${(props) => props.backgroundColor || '#131313'};
   padding: 12px 16px;
   border-radius: 10px;
   width: 100%;
@@ -115,7 +115,7 @@ export const ConversationSibbarContainer = styled.div`
   margin-top: ${SIDEBAR_HEIGHT};
   overflow-y: scroll;
   max-height: calc(100% - ${SIDEBAR_HEIGHT});
-  
+
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -127,5 +127,56 @@ export const ConversationSibbarContainer = styled.div`
 
   &::-webkit-scrollbar-track {
     background: transparent;
+  }
+`;
+
+export const OverlayStyle = styled.div`
+  height: 100%;
+  width: 100%;
+  background-color: #000000c4;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+`;
+
+export const ModalHeaderStyle = styled.header`
+  width: 100%;
+  color: #fff;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+
+  & h2 {
+    font-weight: 500;
+  }
+`;
+
+export const ModalContainerStyle = styled.div`
+  background-color: #121212;
+  width: 650px;
+  border-radius: 10px;
+`;
+
+export const ModalContentBodyStyle = styled.div`
+  padding: 18px;
+`;
+
+export const TextField = styled.textarea`
+  font-family: 'Inter';
+  outline: none;
+  border: none;
+  background-color: inherit;
+  color: #fff;
+  font-size: 18px;
+  width: 100%;
+  height: 100px;
+  resize: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 `;
